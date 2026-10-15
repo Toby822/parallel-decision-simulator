@@ -1,0 +1,47 @@
+name: Test Parallel
+
+on:
+  push:
+    branches:
+      - main
+      - fix/portfolio-source-import
+    paths:
+      - 'parallel/**'
+      - 'dist/**'
+      - 'tests/**'
+      - 'docs/default-scenario.json'
+      - 'requirements.txt'
+      - '.github/workflows/test.yml'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python engine and browser parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install NumPy
+        run: python -m pip install -r requirements.txt
+      - name: Test Python model and cross-runtime parity
+        run: python -m unittest discover -s tests -v
+      - name: Test what-if command planner
+        run: node tests/test_agent.cjs
+      - name: Reproduce documented example
+        run: |
+          python -m parallel.engine --scenario docs/default-scenario.json --output /tmp/parallel-run.json
+          python -c "import json; r=json.load(open('/tmp/parallel-run.json')); assert 'comparison' in r and 'terminal' in r"
