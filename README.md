@@ -1,103 +1,112 @@
 # Parallel — The Decision Simulator
 
-**Compare two choices across the same 10,000 possible futures.**
+**One decision. Ten thousand possible futures.**
 
-Parallel is a working relocation-decision prototype. A higher salary can look compelling until rent, moving costs, unemployment and the commute enter the picture. This prototype lets you inspect those trade-offs, change one assumption and ask what would reverse the result.
+Parallel is a Monte Carlo decision-analysis project built in Python and JavaScript. It compares two choices under the **same simulated economic and personal shocks**, so the results show how the decision changes an outcome—not just how two unrelated forecasts differ.
 
-The first scenario is a move from Manchester to London. Every input is illustrative. There is no live salary, rental-market or personal-account data.
+The worked example asks: *Is a higher-paid job in London worth leaving Manchester once rent, uncertainty and commuting are included?* All numbers are illustrative, and you can change the assumptions.
 
-## Run the Python prototype
+**[Explore the interactive demo](https://parallel-decision-lab.cleverbloom16.chatgpt.site/)** · [Model specification](docs/MODEL.md) · [Validation notes](docs/VALIDATION.md)
 
-Requires Python 3.10+ and a modern browser. NumPy is the only Python dependency.
+> The linked hosted demo may have access restrictions. You can run the browser interface locally using the instructions below.
+
+## What it does
+
+- **Paired Monte Carlo simulation:** 10,000 hypothetical paths over 36 months by default, using common random numbers for both options.
+- **Financial trade-offs:** income, rent, cost inflation, unexpected bills, moving expenses and periods without full pay.
+- **Risk, not just averages:** savings distributions, worst-decile outcomes, emergency-buffer breaches, probability one option finishes ahead, and expected regret.
+- **Break-even analysis:** calculates the London rent at which mean modelled outcomes tie, with other assumptions held constant.
+- **Scenario testing:** change a salary, reduce rent or price your commute time; cash savings and time-adjusted scores stay separate.
+- **Interactive dashboard:** inspect individual simulated worlds and export the scenario, random seed and results.
+- **Guided voice/text interface:** multi-turn, rule-based what-if commands with optional browser speech input/output. This is a *local simulated assistant*, not a live Alexa integration or an LLM.
+
+### Reference scenario
+
+Under the bundled assumptions, seed 42, 10,000 paths and 36 months:
+
+| Change | London ahead in simulated paths | Mean London cash difference |
+| --- | ---: | ---: |
+| Original London rent: £1,650/month | 23.90% | −£1,593 |
+| Reduce London rent to £1,450/month | 94.35% | +£5,825 |
+
+The mean-difference break-even London rent is approximately **£1,607/month**. These figures describe outcomes **conditional on the model inputs**, not empirically estimated chances of success. A break-even mean is not the same as a 50% win probability.
+
+## Run it yourself
+
+Requires **Python 3.10+**. For the Python/NumPy-backed web interface:
 
 ```bash
+git clone https://github.com/Toby822/parallel-decision-simulator.git
+cd parallel-decision-simulator
 python -m pip install -r requirements.txt
 python -m parallel.server
 ```
 
-Open **http://127.0.0.1:8000**. The footer will identify **Python / NumPy engine · local API**. All simulations then run in Python; the browser renders the results.
+Open **http://127.0.0.1:8000** in your browser. This local server exposes a `/api/simulate` endpoint and serves the dashboard. It binds to localhost; do not expose this development server directly to the public internet.
 
-The development server binds to loopback. Deploy behind a suitable application server if adapting it for Internet use.
+To run just the browser implementation (no Python server needed after downloading):
 
-## Browser demo
+```bash
+python -m http.server 8080 --directory dist
+```
 
-The hosted version runs the deterministic JavaScript port in a Web Worker. It does not run Python on the hosting service. The two implementations share a model version, random-number stream, ordering of draws and quantile convention; the automated parity checks compare terminal outcomes path by path.
+Open **http://127.0.0.1:8080**. In this mode, the computations run in a JavaScript Web Worker. Voice recognition depends on browser support; typed commands work without it. Both implementations are designed to use matching simulated random draws.
 
-You can also serve `dist/` with any static web server. There are no CDN dependencies, API keys, model subscriptions, build step or account requirements for the simulation. Browser microphone and speech support varies; the typed version is complete.
+### Try a what-if
 
-## Try this demo
+1. Start with the sample Manchester/London comparison.
+2. Ask **“Show me the downside.”** Then ask **“What would change my mind?”**
+3. Ask **“Lower London rent by £200.”** Inspect the updated savings chart and rent threshold.
+4. Ask **“Value my time at twenty pounds an hour.”** Notice that the *cash* chart does not change.
+5. Ask **“Undo”** or export the run to inspect its assumptions.
 
-1. Reset the example. Look at the £850 difference in monthly take-home pay.
-2. Ask **“Show me the downside.”** Both choices experienced the same economic and personal shocks.
-3. Ask **“What would change my mind?”** Inspect the London rent tipping point.
-4. Ask **“Lower London rent by £200.”** The planner validates the update and reuses the same seed.
-5. Ask **“Value my time at twenty pounds an hour.”** The cash chart remains separate from the time-adjusted comparison.
-6. Ask **“Undo.”** Then export the decision run.
+## Test and reproduce
 
-The default seed-42 run has a 23.9% London-ahead fraction and an average London cash difference of −£1,593 over 36 months. At £1,450 London rent, those become 94.35% and +£5,825. These are model outputs, not real-world success probabilities. The mean-score rent tipping point is about £1,607/month, not the 50% win-probability threshold.
-
-## Alexa+ track implementation
-
-This is explicitly a **simulated Alexa+ experience**, using the alternate submission path in the hackathon rules. It has a multi-turn, bounded tool planner, scenario state, validation, compare/re-run, downside inspection, tipping-point calculation, undo and an exportable tool trace. The planner is rule-based and supports the advertised commands; it is not a general language model and does not pretend to answer arbitrary questions.
-
-There is **no live Alexa+ integration**, Amazon SDK runtime, MCP server or Bedrock call in this version. No AWS mini-challenge integration is claimed. Microphone input uses browser speech recognition; optional spoken output uses browser speech synthesis. A browser speech service may process voice input according to its own settings; typed commands require neither microphone access nor a speech service.
-
-Official rules and organizer clarification:
-
-- https://amazonappdev2026.devpost.com/rules
-- https://amazonappdev2026.devpost.com/forum_topics/45397-what-exactly-are-you-looking-for-in-the-alexa-track
-
-## Verify the model
-
-Node.js is only needed for cross-runtime and planner checks.
+Requires **Node.js** as well as Python for the browser parity/planner checks:
 
 ```bash
 python -m unittest discover -s tests -v
 node tests/test_agent.cjs
 ```
 
-Tests check identical-option symmetry, seed reproducibility, rent and salary monotonicity, the exact mean tipping point, cash/commute separation, buffer monotonicity, regret identities, validation and HTTP handler behavior. Three configurations compare the browser and Python terminal balances and summaries. These checks verify the implementation; they do not validate the illustrative assumptions against real data.
+The tests exercise reproducible seeding, identical-option symmetry, input validation, monotonicity, regret identities, cash-versus-time separation, HTTP handlers and **Python/JavaScript numerical parity** across multiple scenarios.
 
-To reproduce the reference run:
+Generate a scenario run as JSON:
 
 ```bash
 python -m parallel.engine --scenario docs/default-scenario.json --output run.json
 ```
 
-To reproduce an exported dashboard run, extract its `simulation.scenario` object to a JSON file and pass that path to `--scenario`.
-
-## What is modelled
-
-- Monthly cash flows and a one-off moving cost, over 1–60 months.
-- World-level wage growth, inflation and rent growth.
-- Shared monthly spending variation, unexpected bills and employment-shock draws.
-- Different job-loss hazard thresholds, fixed re-employment duration and 20% fallback pay.
-- Pointwise savings quantiles, worst-decile average savings, buffer breaches, paired win fraction, expected regret and the mean-score rent tipping point.
-- Optional explicit value of commute time, applied to score rather than cash balances.
-
-See [the model specification](docs/MODEL.md) for equations, distributions and limitations.
-
-## Source map
+## How it works
 
 ```text
-parallel/engine.py          Python simulation and validation
-parallel/server.py          Local HTTP API and dashboard serving
-dist/model.js               Browser simulation port
-dist/simulation-worker.js   Off-main-thread browser computation
-dist/agent.js               Bounded intent-to-tool planner
-dist/app.js                 Dashboard, state, voice and exports
-docs/PROJECT_STORY.md       Devpost-ready project description
-docs/DEMO_GUIDE.md          Two-minute recording script
-docs/MODEL.md               Mathematical specification
-tests/                     Properties, parity and API checks
+parallel/
+  engine.py          Python simulation, statistics and input validation
+  server.py          Local HTTP API + static file server
+
+dist/
+  index.html         Interactive browser dashboard
+  model.js           Matching JavaScript simulation
+  simulation-worker.js
+  agent.js           Bounded natural-language command parser
+  app.js             Chart rendering, state, export and voice controls
+  style.css
+
+tests/                Model properties, API, agent and parity tests
+docs/MODEL.md         Assumptions, distributions and mathematical definitions
+docs/VALIDATION.md    Reference values and validation approach
 ```
 
-## Submission status
+The important modelling choice is **coupling both options within each simulated world**. A shared inflation spike, unexpected bill or employment shock is drawn once and applied to both alternatives. That makes the paired difference informative and reduces unnecessary comparison noise—but it is a modelling assumption, not evidence that two careers share identical risks.
 
-This repository is a prototype package, not a completed hackathon submission. Before submitting: upload the complete source to GitHub, provide access for judges as required by the rules, record the actual working simulated experience in an English video under three minutes and use the correct track label. A private hosted preview alone does not give judges access. No public GitHub repository or demo-video URL has been created by this package.
+## Limitations and next steps
 
-Development assistance: OpenAI Codex was used to implement and document this prototype. Describe that assistance accurately if the submission form asks. Do not claim independent manual authorship or external user testing that did not occur.
+Parallel is a research/portfolio prototype, **not financial or career advice**. It uses illustrative assumptions rather than calibrated labour-market data. It does not model tax, investment returns, promotions, household changes, personal wellbeing, or long-term career option value. A larger simulation sample reduces Monte Carlo sampling error; it does not validate those assumptions.
+
+Future work: calibrate cost and employment distributions using real data, vary the dependence between options and add out-of-sample sensitivity studies.
 
 ## License
 
-MIT. See `LICENSE`.
+MIT — see [LICENSE](LICENSE).
+
+Development note: the project was built with assistance from OpenAI coding tools.
