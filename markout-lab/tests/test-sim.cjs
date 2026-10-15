@@ -9,7 +9,7 @@ assert.deepEqual(r,again,'same seed should reproduce complete simulation');
 assert.equal(r.strategies.length,3);
 assert.equal(r.params.paths,32);
 assert.equal(r.params.steps,720);
-assert.equal(r.detail.ladder.length,13);
+assert.equal(r.detail.ladder.length,13);\nassert.ok(Number.isFinite(r.summary.pairedFlowVsInventory.mean));\nassert.ok(r.summary.pairedFlowVsInventory.ci95[0]<=r.summary.pairedFlowVsInventory.mean);\nassert.ok(r.summary.pairedFlowVsInventory.ci95[1]>=r.summary.pairedFlowVsInventory.mean);\nassert.ok(Math.abs(r.summary.pairedFlowVsInventory.mean-(r.strategies[2].mean-r.strategies[1].mean))<1e-9);
 assert.ok(r.detail.records.length>0);
 for(const st of r.strategies){
  assert.ok(Number.isFinite(st.mean),'finite P&L');
