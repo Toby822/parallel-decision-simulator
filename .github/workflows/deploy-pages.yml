@@ -1,11 +1,10 @@
-name: Publish research web apps
+name: Publish Parallel
 
 on:
   push:
     branches: [main]
     paths:
       - 'dist/**'
-      - 'markout-lab/**'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
@@ -20,62 +19,25 @@ concurrency:
 
 jobs:
   deploy:
-    name: Build and deploy public research apps
+    name: Publish independent Parallel dashboard
     runs-on: ubuntu-latest
-    timeout-minutes: 12
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Validate simulation scripts
+      - uses: actions/checkout@v4
+      - name: Validate standalone Parallel
         run: |
           set -euo pipefail
-          for f in dist/app.js dist/model.js dist/agent.js dist/simulation-worker.js markout-lab/sim.js markout-lab/app.js; do
-            test -s "$f"
-            node --check "$f"
-          done
-          node markout-lab/tests/test-sim.cjs
-          test -s markout-lab/index.html
-          test -s markout-lab/style.css
-
-      - name: Stage Markout Lab alongside Parallel
-        run: |
-          mkdir -p dist/markout-lab
-          cp markout-lab/index.html markout-lab/style.css markout-lab/sim.js markout-lab/app.js markout-lab/favicon.svg dist/markout-lab/
-          touch dist/.nojekyll
+          node --check dist/app.js
+          node --check dist/model.js
+          node --check dist/agent.js
+          node --check dist/simulation-worker.js
           test -s dist/index.html
-          test -s dist/markout-lab/index.html
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload static site
-        uses: actions/upload-pages-artifact@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: dist
-
-      - name: Publish GitHub Pages
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Verify public Markout Lab URL
-        shell: bash
-        run: |
-          set -euo pipefail
-          URL="https://toby822.github.io/parallel-decision-simulator/markout-lab/"
-          for attempt in $(seq 1 12); do
-            if curl --fail --silent --show-error --location --max-time 15 "$URL" -o /tmp/markout-public.html && grep -q 'MARKOUT LAB' /tmp/markout-public.html; then
-              echo "Public Markout Lab document verified: $URL"
-              break
-            fi
-            echo "Waiting for GitHub Pages propagation ($attempt/12)"
-            sleep 3
-          done
-          grep -q 'MARKOUT LAB' /tmp/markout-public.html
-          for asset in sim.js app.js style.css; do
-            curl --fail --silent --show-error --location --max-time 15 "$URL$asset" -o /dev/null
-          done
-          echo "Public HTML, simulation, UI and stylesheet all available."

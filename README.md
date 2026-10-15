@@ -1,9 +1,5 @@
 # Parallel — The Decision Simulator
 
-> **NEW RESEARCH APP — [MARKOUT LAB](https://toby822.github.io/parallel-decision-simulator/markout-lab/):** An interactive market microstructure experiment comparing fixed, inventory-skew and flow-aware market-making strategies with reproducible synthetic order flow, signed post-fill markout, P&L decomposition and latency stress tests. [Source & methodology](markout-lab/README.md).
-
----
-
 **One decision. Ten thousand possible futures.**
 
 Parallel is a Monte Carlo decision-analysis project built in Python and JavaScript. It compares two choices under the **same simulated economic and personal shocks**, so the results show how the decision changes an outcome—not just how two unrelated forecasts differ.
