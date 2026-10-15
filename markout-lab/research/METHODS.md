@@ -74,7 +74,7 @@ Spread capture can appear positive even when adverse selection and inventory pri
 
 ## Statistical summaries
 
-For each policy, N paths produce terminal P&Ls. We report their arithmetic mean, median, empirical 5% and 95% quantiles, approximate 95% confidence interval `mean ± 1.96*sample_sd/sqrt(N)`, fraction positive and the mean of terminal outcomes at/below the 5th sample quantile (CVaR-style diagnostic). With N=32 this extreme-tail estimate is especially noisy. There is no claimed Sharpe ratio, because no real trading-day time scale, funding rate or independent daily return series has been established.
+For each policy, N paths produce terminal P&Ls. We report their arithmetic mean, median, empirical 5% and 95% quantiles, approximate 95% confidence interval `mean ± 1.96*sample_sd/sqrt(N)`, fraction positive and the mean of terminal outcomes at/below the 5th sample quantile (CVaR-style diagnostic). For the incremental observed-flow policy, the app additionally reports a **paired 95% interval** computed from the per-path (flow-aware terminal P&L − inventory-skew terminal P&L), preserving the shared-shocks design. With N=32 this extreme-tail estimate is especially noisy. There is no claimed Sharpe ratio, because no real trading-day time scale, funding rate or independent daily return series has been established.
 
 Risk reports also include maximum absolute inventory and peak-to-trough marked-equity drawdown. Stress heatmap compares the flow-aware mean to the inventory-skew mean (isolating the incremental observed-flow rule) at each toxicity/latency combination using identical tapes for that comparison, but a smaller sample (up to 10 paths and 400 events) for speed. Treat it as a **diagnostic**, not statistical proof of robustness.
 
