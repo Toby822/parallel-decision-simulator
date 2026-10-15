@@ -1,0 +1,54 @@
+name: Publish Parallel web app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dist/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy interactive dashboard
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check static web app
+        run: |
+          test -s dist/index.html
+          test -s dist/app.js
+          test -s dist/model.js
+          test -s dist/agent.js
+          test -s dist/simulation-worker.js
+          test -s dist/style.css
+          node --check dist/app.js
+          node --check dist/model.js
+          node --check dist/agent.js
+          node --check dist/simulation-worker.js
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload dashboard
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
