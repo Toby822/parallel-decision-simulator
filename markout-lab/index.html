@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0e1519"><meta name="description" content="Markout Lab: test market-making strategies under synthetic order flow, latency and adverse selection. An interactive research workbench.">
+<title>MARKOUT LAB — Market Microstructure Research</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="stylesheet" href="style.css">
+<script src="sim.js" defer></script><script src="app.js" defer></script>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar" aria-label="Experiment controls">
+ <a class="identity" href="./" aria-label="Markout Lab home"><span class="mark"><span></span><span></span><span></span><span></span></span><span><strong>MARKOUT<span class="soft">LAB</span></strong><small>QUANT RESEARCH WORKBENCH</small></span></a>
+ <div class="side-label"><span class="led"></span> EXPERIMENT PARAMETERS <span class="line"></span></div>
+ <div class="parameter-group">
+  <label for="seed">REPRODUCIBLE SEED <span class="inline-tip" title="The seed fixes the simulated shocks used by every strategy">?</span></label>
+  <input id="seed" type="number" min="0" max="4294967295" step="1" value="4172">
+ </div>
+ <div class="parameter-group"><label for="paths">MONTE CARLO PATHS <output id="paths-out">32</output></label><input type="range" id="paths" min="8" max="64" step="8" value="32"><div class="range-label"><span>8 paths</span><span>64 paths</span></div></div>
+ <div class="parameter-group"><label for="steps">EVENT HORIZON <output id="steps-out">720</output></label><input type="range" id="steps" min="200" max="1200" step="100" value="720"><div class="range-label"><span>200 events</span><span>1,200 events</span></div></div>
+ <div class="section-rule"></div>
+ <div class="parameter-group"><label for="toxicity">INFORMED-FLOW INTENSITY <output id="toxicity-out">0.52</output></label><input type="range" id="toxicity" min="0" max="1" step=".01" value=".52"><div class="range-label"><span>Uninformed</span><span>Directional</span></div></div>
+ <div class="parameter-group"><label for="volatility">PRICE VOLATILITY <output id="volatility-out">1.25</output></label><input type="range" id="volatility" min=".2" max="4" step=".05" value="1.25"><div class="range-label"><span>0.2 ticks</span><span>4 ticks</span></div></div>
+ <div class="parameter-group"><label for="latency">QUOTE LATENCY <output id="latency-out">40 ms</output></label><input type="range" id="latency" min="0" max="240" step="20" value="40"><div class="range-label"><span>0 ms</span><span>240 ms</span></div></div>
+ <div class="parameter-group"><label for="halfSpread">HALF-SPREAD <output id="halfSpread-out">2.2 ticks</output></label><input type="range" id="halfSpread" min="1" max="6" step=".2" value="2.2"><div class="range-label"><span>1 tick</span><span>6 ticks</span></div></div>
+ <div class="section-rule"></div>
+ <div class="parameter-group"><label for="inventoryLimit">INVENTORY CAP <output id="inventoryLimit-out">22</output></label><input type="range" id="inventoryLimit" min="4" max="60" step="2" value="22"><div class="range-label"><span>4 units</span><span>60 units</span></div></div>
+ <div class="parameter-group"><label for="riskAversion">INVENTORY AVERSION <output id="riskAversion-out">1.15</output></label><input type="range" id="riskAversion" min="0" max="3" step=".05" value="1.15"><div class="range-label"><span>Neutral</span><span>Defensive</span></div></div>
+ <button id="run" class="primary" type="button"><span>RUN EXPERIMENT</span><span aria-hidden="true">↗</span></button>
+ <div class="side-actions"><button type="button" class="secondary" id="reset">↺ Reset</button><button type="button" class="secondary" id="export">⇩ Export JSON</button></div>
+ <div class="side-bottom"><span class="led"></span> MODEL V1.0 · BROWSER COMPUTED <p>Reproducible, synthetic and educational. Not live trading, exchange data or investment advice.</p></div>
+</aside>
+<div class="workspace">
+ <header class="topbar"><div class="crumb">RESEARCH / <span>MICROSTRUCTURE</span> / EXPERIMENT 001</div><div class="top-right"><span class="pill"><span class="led"></span> SIMULATION READY</span><a href="https://github.com/Toby822/parallel-decision-simulator/tree/main/markout-lab" target="_blank" rel="noopener noreferrer">SOURCE CODE ↗</a></div></header>
+ <main>
+  <section class="hero">
+    <div><div class="eyebrow">MARKET-MAKING RESEARCH · INTERACTIVE EXPERIMENT</div><h1>When the spread <em>isn't profit.</em></h1><p>Test how adverse selection, stale quotes and inventory risk turn apparently attractive fills into fragile market-making returns. Three strategies. The same market shocks. No hindsight.</p></div>
+    <div class="hero-badge"><span class="small">RESEARCH PROTOCOL</span><span>01 <b>/</b> 03</span><small>MARKET MICROSTRUCTURE</small></div>
+  </section>
+  <section class="research-prompt"><div class="slash">↳</div><div><small>THE QUESTION</small><strong>Does smarter quoting survive when execution quality changes?</strong><p>All strategies face an identical synthetic price/flow tape in each path. Outcomes are conditional on the explicitly stated model.</p></div><button id="methods-btn" class="textlink" type="button">READ METHODS <span>↗</span></button></section>
+  <div class="results-head"><span>01 — EXPERIMENT OUTPUT</span><span id="run-info">RUN · SEED 4172</span></div>
+  <section class="kpis" aria-label="Simulation key performance indicators">
+    <article class="kpi"><div class="kpi-label">BEST MEAN P&L <span>01</span></div><div id="kpi-best" class="kpi-value">—</div><div id="kpi-best-note" class="kpi-note">calculating...</div></article>
+    <article class="kpi"><div class="kpi-label">BASELINE SPREAD CAPTURE <span>02</span></div><div id="kpi-spread" class="kpi-value">—</div><div class="kpi-note">per path · gross of fees</div></article>
+    <article class="kpi"><div class="kpi-label">FLOW-AWARE MARKOUT <span>03</span></div><div id="kpi-markout" class="kpi-value">—</div><div class="kpi-note">20 events after fill · signed</div></article>
+    <article class="kpi"><div class="kpi-label">FLOW-AWARE 5% TAIL <span>04</span></div><div id="kpi-tail" class="kpi-value">—</div><div class="kpi-note">CVaR · worst simulated paths</div></article>
+  </section>
+  <div class="major-grid">
+   <article class="panel equity-panel"><div class="panel-head"><div><small>FIG. 01 / P&L PATH</small><h2>Equity & mark-to-market</h2><p>One paired simulated world · cash plus inventory × mid-price</p></div><div class="legend" id="equity-legend"></div></div><div id="equity-chart" class="chart equity-chart" role="img" aria-label="Strategies' mark-to-market P&L paths"></div><div class="panel-foot"><span>INITIAL EQUITY = 0</span><span>MARK-TO-MARKET · NOT REAL RETURNS</span></div></article>
+   <article class="panel pnl-panel"><div class="panel-head"><div><small>FIG. 02 / P&L ATTRIBUTION</small><h2>Where returns come from</h2><p>Per-path averages, split by trading mechanism</p></div></div><div class="strategy-pick" role="group" aria-label="Select strategy for P&L decomposition"><button class="selected" data-strategy="flow">FLOW-AWARE</button><button data-strategy="inventory">INVENTORY</button><button data-strategy="fixed">FIXED</button></div><div class="waterfall" id="pnl-bars"></div><div class="reconcile" id="pnl-reconcile"></div></article>
+  </div>
+  <div class="major-grid second-grid">
+   <article class="panel"><div class="panel-head"><div><small>FIG. 03 / SELECTION COST</small><h2>Post-fill markout</h2><p>Signed mid-price movement after a maker fill. Negative means adverse.</p></div><span class="tiny-tag">CONDITIONAL ON FILLS</span></div><div id="markout-chart" class="chart markout-chart" role="img" aria-label="Post-fill markout across four horizons"></div><div class="panel-foot"><span>HORIZON: 1 · 5 · 20 · 50 EVENTS</span><span>UNITS: PRICE / SHARE</span></div></article>
+   <article class="panel"><div class="panel-head"><div><small>FIG. 04 / INDICATIVE DEPTH</small><h2>Synthetic order-book snapshot</h2><p>Illustrative ladder near the reference mid-price; not a live L2 feed.</p></div><span id="book-step" class="tiny-tag">EVENT —</span></div><div class="book-heading"><span>BID DEPTH</span><span>PRICE</span><span>ASK DEPTH</span></div><div id="book-ladder" class="book-ladder"></div><div class="panel-foot"><span>ANALYTICAL VISUALISATION</span><span>QUEUE FILL MODEL ≠ FULL EXCHANGE SIMULATOR</span></div></article>
+  </div>
+  <section class="panel table-panel"><div class="panel-head"><div><small>TABLE 01 / PAIRED EXPERIMENTS</small><h2>Strategy comparison</h2><p>Identical synthetic market tape across each strategy · averages over seeded paths</p></div><button id="csv" class="ghost" type="button">EXPORT CSV ↗</button></div><div class="table-scroller"><table><thead><tr><th>STRATEGY</th><th>MEAN P&L</th><th>95% CI FOR MEAN</th><th>SPREAD</th><th>INVENTORY</th><th>FEES</th><th>MEAN FILLS</th><th>AVG MAX |Q|</th></tr></thead><tbody id="comparison-rows"></tbody></table></div><div class="fineprint">Confidence intervals quantify sampling uncertainty across independent simulated paths only; they exclude model, calibration and market-data uncertainty.</div></section>
+  <div class="major-grid second-grid">
+   <article class="panel"><div class="panel-head"><div><small>FIG. 05 / STRESS SURFACE</small><h2>Where the edge disappears</h2><p>Flow-aware minus fixed-spread mean P&L · smaller paired experiment</p></div><span class="tiny-tag">SAME SEEDS</span></div><div id="stress-heatmap" class="heatmap" aria-label="Latency versus informed flow sensitivity matrix"></div><div class="panel-foot"><span>ROWS · TOXICITY</span><span>COLUMNS · LATENCY (MS)</span></div></article>
+   <article class="panel"><div class="panel-head"><div><small>TABLE 02 / EXECUTION TAPE</small><h2>Inspect actual simulated fills</h2><p>Flow-aware strategy · path 1 · most recent fills</p></div><span class="tiny-tag">NO FUTURE INFORMATION</span></div><div class="table-scroller tape-scroller"><table><thead><tr><th>EVENT</th><th>SIDE</th><th>FILL PX</th><th>INV.</th><th>+20 MARKOUT</th></tr></thead><tbody id="fills-rows"></tbody></table></div><div class="panel-foot"><span>MARKOUT IS DIAGNOSTIC, NOT A DIRECT P&L COMPONENT</span></div></article>
+  </div>
+  <section class="interpretation"><div class="interpret-icon">∴</div><div><small>MODEL-DERIVED RESEARCH NOTE</small><h2 id="insight-title">Reading the experiment</h2><p id="insight-body">Simulating the paired experiment...</p></div><button type="button" id="method-footer" class="textlink">MODEL ASSUMPTIONS ↗</button></section>
+  <footer><div>MARKOUT LAB <span>© RESEARCH PROTOTYPE</span></div><div>SYNTHETIC DATA ONLY · SEED REPRODUCIBLE · <a href="https://github.com/Toby822/parallel-decision-simulator/tree/main/markout-lab" target="_blank" rel="noopener noreferrer">VIEW SOURCE ↗</a></div></footer>
+ </main>
+</div>
+</div>
+<dialog id="method-dialog"><div class="modal-head"><div><small>RESEARCH NOTE · SPECIFICATION 1.0</small><h2>What this simulator actually models</h2></div><button id="close-methods" aria-label="Close research note">×</button></div><div class="modal-content"><p class="lead">An explicitly synthetic, event-driven market-making laboratory. It is designed to test hypotheses and surface execution trade-offs—not to estimate real exchange profitability.</p><h3>Event tape & information</h3><p>A latent, persistent information state drives the sign of aggressive order flow and part of the next-price movement. Strategies share that market tape. The flow-aware policy only uses a lagged exponentially weighted average of <em>observed past</em> flow, never the latent variable or next price. Each trial uses seeded xorshift32 draws and Box–Muller normal innovations.</p><h3>Order fills & quoting</h3><p>Quotes are placed around a potentially stale reference mid-price. A distance- and latency-dependent Bernoulli fill rule approximates competition for flow. The model includes inventory caps and a per-fill fee. It does <strong>not</strong> reproduce matching-engine priority, cancellations, all resting depth, order routing or network jitter. The depth ladder is illustrative, not the input to matching.</p><h3>Strategies</h3><p><strong>Fixed:</strong> fixed distance around the reference mid. <strong>Inventory skew:</strong> moves quote centre against accumulated inventory. <strong>Flow-aware:</strong> adds a shift and widening driven by observed signed order flow, alongside inventory skew.</p><h3>P&L accounting</h3><p>Marked equity = cash + inventory × mid. A fill contributes signed (mid − quote) minus fee to spread capture. Open inventory then gains or loses from later mid moves. Consequently, <strong>mean net P&L = mean spread capture + mean inventory P&L − mean fees</strong>. A 20-event markout measures signed post-fill movement and is diagnostic; do not subtract it again from net P&L.</p><h3>Inference & limitations</h3><p>Paths are independent synthetic trials. The 95% interval is a normal approximation to the uncertainty in sample mean P&L. It does not establish alpha, live fill rates, robust market impact or strategy viability. Scenarios are not estimates of a specific asset. Explore parameter sensitivity and reproducibility before drawing a conclusion.</p><div class="modal-actions"><a href="https://github.com/Toby822/parallel-decision-simulator/blob/main/markout-lab/research/METHODS.md" target="_blank" rel="noopener noreferrer">FULL MATHEMATICAL METHODS ↗</a><button id="close-methods-bottom" class="primary">BACK TO EXPERIMENT</button></div></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+</body></html>
