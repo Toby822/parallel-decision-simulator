@@ -60,3 +60,22 @@ jobs:
       - name: Publish GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify public Markout Lab URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://toby822.github.io/parallel-decision-simulator/markout-lab/"
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --location --max-time 15 "$URL" -o /tmp/markout-public.html && grep -q 'MARKOUT LAB' /tmp/markout-public.html; then
+              echo "Public Markout Lab document verified: $URL"
+              break
+            fi
+            echo "Waiting for GitHub Pages propagation ($attempt/12)"
+            sleep 3
+          done
+          grep -q 'MARKOUT LAB' /tmp/markout-public.html
+          for asset in sim.js app.js style.css; do
+            curl --fail --silent --show-error --location --max-time 15 "$URL$asset" -o /dev/null
+          done
+          echo "Public HTML, simulation, UI and stylesheet all available."
