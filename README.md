@@ -6,7 +6,9 @@ Parallel is a Monte Carlo decision-analysis project built in Python and JavaScri
 
 The worked example asks: *Is a higher-paid job in London worth leaving Manchester once rent, uncertainty and commuting are included?* All numbers are illustrative, and you can change the assumptions.
 
-**[Explore the interactive demo](https://parallel-decision-lab.cleverbloom16.chatgpt.site/)** · [Model specification](docs/MODEL.md) · [Validation notes](docs/VALIDATION.md)
+**[Open the interactive web app](https://toby822.github.io/parallel-decision-simulator/)** · [Model specification](docs/MODEL.md) · [Validation notes](docs/VALIDATION.md)
+
+> **Deployment:** The public GitHub Pages demo is prepared but will show 404 until Pages is enabled once in [repository settings](https://github.com/Toby822/parallel-decision-simulator/settings/pages) (Source: **GitHub Actions**). The source can already be run locally using the instructions below.
 
 > The linked hosted demo may have access restrictions. You can run the browser interface locally using the instructions below.
 
