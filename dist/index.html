@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f4ef">
+  <meta name="description" content="Explore two choices across the same 10,000 possible futures. A transparent decision simulator, with a simulated Alexa+ experience.">
+  <title>Parallel — The Decision Simulator</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css">
+  <script src="model.js" defer></script><script src="agent.js" defer></script><script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./" aria-label="Parallel home"><svg width="29" height="32" viewBox="0 0 29 32" aria-hidden="true"><path d="M6 29V13C6 5 23 5 23 13S6 21 6 29M13 29V13C13 8 27 8 27 13S13 23 13 29" fill="none" stroke="currentColor" stroke-width="2.5"/></svg><span>parallel<span class="brand-dot">.</span></span></a>
+  <nav aria-label="Main navigation"><button class="nav-active" id="lab-nav" type="button">Decision lab</button><button data-dialog="model-dialog" type="button">How it works <span>↗</span></button></nav>
+  <div class="header-right"><span class="prototype"><i></i> RESEARCH PROTOTYPE</span><button class="text-button" id="export-top" type="button">Export run <span>↗</span></button></div>
+</header>
+<main>
+  <section class="intro">
+    <div><div class="eyebrow">A LITTLE LESS “WHAT IF.” A LITTLE MORE “NOW I SEE.”</div><h1>One decision.<br><span>Ten thousand possible futures.</span></h1><p>Put two choices in the same world. See the trade-offs before you make the move.</p></div>
+    <div class="intro-note"><svg viewBox="0 0 120 55" role="img" aria-label="Two paths branching from one starting point"><path d="M2 43C35 43 30 12 62 12S88 33 118 9"/><path d="M2 43C35 43 35 48 62 39S88 17 118 42"/><circle cx="2" cy="43" r="3"/></svg><span>SAME WORLD.<br>DIFFERENT CHOICES.</span></div>
+  </section>
+  <section class="workspace" aria-label="Decision simulator">
+    <aside class="controls">
+      <div class="section-label">01 / YOUR DECISION</div>
+      <h2>Is the London offer<br>worth the move?</h2>
+      <p class="muted small">An illustrative relocation decision.<br>Make the numbers your own.</p>
+      <div class="option-tag"><span class="dot a"></span> A · STAY IN MANCHESTER</div>
+      <label class="field" for="income-a"><span>Monthly take-home <span>£</span></span><input id="income-a" type="number" min="0" max="50000" step="any" value="2900" data-option="0" data-field="income"></label>
+      <label class="field" for="rent-a"><span>Monthly rent <span>£</span></span><input id="rent-a" type="number" min="0" max="20000" step="any" value="900" data-option="0" data-field="rent"></label>
+      <div class="option-tag b-tag"><span class="dot b"></span> B · TAKE THE LONDON OFFER</div>
+      <label class="field" for="income-b"><span>Monthly take-home <span>£</span></span><input id="income-b" type="number" min="0" max="50000" step="any" value="3750" data-option="1" data-field="income"></label>
+      <label class="field" for="rent-b"><span>Monthly rent <span>£</span></span><input id="rent-b" type="number" min="0" max="20000" step="any" value="1650" data-option="1" data-field="rent"></label>
+      <div class="control-divider"></div>
+      <label class="field" for="savings"><span>Starting savings <span>£</span></span><input id="savings" type="number" min="0" max="1000000" step="any" value="12000" data-field="savings"></label>
+      <label class="slider-field" for="time-value"><span>Your time is worth <strong id="time-label">£0 / hour</strong></span><input id="time-value" type="range" min="0" max="50" step="1" value="0" data-field="time_value"><small>Optional commute-time preference.<br>Cash savings stay separate.</small></label>
+      <button class="secondary full" data-dialog="assumptions-dialog" type="button">All assumptions <span>↗</span></button>
+      <div class="control-footer"><button class="text-button" id="reset" type="button">↶ Reset example</button><span>GBP · 36 months</span></div>
+    </aside>
+    <section class="analysis" aria-label="Simulation results" aria-busy="true">
+      <div class="analysis-header"><div><span class="section-label">02 / THE POSSIBLE FUTURES</span><h2>Look beyond the headline salary.</h2></div><div class="run-status" role="status" id="run-status"><span class="pulse"></span> Simulating…</div></div>
+      <div class="metric-row">
+        <article class="metric"><span id="chance-title">London finishes ahead</span><strong id="chance">—</strong><small id="chance-note">of paired simulated worlds</small></article>
+        <article class="metric"><span id="gap-title">Average London advantage</span><strong id="gap">—</strong><small id="gap-note">after 3 years · cash savings</small></article>
+        <article class="metric"><span>London rent tipping point</span><strong id="threshold">—</strong><small>per month · all else unchanged</small></article>
+      </div>
+      <div class="chart-head"><div><h3>Savings over the next 3 years</h3><p>Lines show the median. Shaded bands contain the middle 80% of outcomes.</p></div><div class="legend"><span><i class="a"></i> Manchester</span><span><i class="b"></i> London</span></div></div>
+      <div class="chart-wrap" id="chart-wrap"><svg id="fan-chart" viewBox="0 0 760 296" role="img" aria-labelledby="chart-title chart-desc"><title id="chart-title">Simulated savings by month</title><desc id="chart-desc">Two median paths with tenth to ninetieth percentile bands.</desc></svg><div class="chart-loading" id="chart-loading">Giving both choices the same future…</div></div>
+      <div class="world-inspector"><div><span class="tiny-label">STEP INTO ONE WORLD</span><span class="world-label" id="world-label">World 1</span></div><input id="world-slider" type="range" min="0" max="100" value="0" aria-label="Inspect a paired simulated world"><button class="text-button" id="world-toggle" type="button" aria-pressed="false">Show path ↗</button></div>
+      <div class="option-cards">
+        <article class="outcome-card"><div class="card-title"><span><i class="dot a"></i> STAY IN MANCHESTER</span><span class="card-mark">A</span></div><strong id="median-a">—</strong><span class="small muted">median savings after 3 years</span><div class="card-stats"><div><span>Average of worst 10%</span><b id="tail-a">—</b></div><div><span>Falls below your buffer</span><b id="risk-a">—</b></div><div><span>Expected regret <button class="info" data-dialog="model-dialog" type="button" aria-label="What is expected regret?">?</button></span><b id="regret-a">—</b></div></div></article>
+        <article class="outcome-card"><div class="card-title"><span><i class="dot b"></i> TAKE THE LONDON OFFER</span><span class="card-mark b-mark">B</span></div><strong id="median-b">—</strong><span class="small muted">median savings after 3 years</span><div class="card-stats"><div><span>Average of worst 10%</span><b id="tail-b">—</b></div><div><span>Falls below your buffer</span><b id="risk-b">—</b></div><div><span>Expected regret <button class="info" data-dialog="model-dialog" type="button" aria-label="What is expected regret?">?</button></span><b id="regret-b">—</b></div></div></article>
+      </div>
+      <section class="insight"><span class="insight-icon">↳</span><div><div class="tiny-label">THE QUESTION WORTH ASKING</div><p id="insight-text">Running the paired comparison…</p><button class="text-button" id="try-counterfactual" type="button">Try £200 less in London rent <span>→</span></button></div></section>
+      <div class="assumption-note"><span>◇</span><p id="assumption-note">These are possible outcomes under your assumptions, not predictions. Career progression, family and happiness are yours to weigh.</p></div>
+    </section>
+    <aside class="voice-panel" aria-label="Simulated Alexa+ experience">
+      <div class="voice-top"><span class="section-label">03 / TALK IT THROUGH</span><span class="sim-badge">SIMULATED</span></div>
+      <div class="device"><div class="orb" aria-hidden="true"><div></div></div><div><span class="device-name">Alexa+ experience</span><span class="device-status" id="voice-status">Ready when you are</span></div><button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false" aria-label="Enable spoken responses" title="Read responses aloud">♪</button></div>
+      <p class="voice-intro">“Alexa, help me think<br>through the London offer.”</p>
+      <p class="muted small">Ask a follow-up. Change a number.<br>See the whole picture update.</p>
+      <div class="conversation" id="conversation" aria-live="polite" aria-relevant="additions"><div class="message assistant"><span>PARALLEL</span><p>I’ll compare the same 10,000 futures for both options. What would you like to look at first?</p></div></div>
+      <div class="suggestions" id="suggestions"><button type="button" data-command="What would change my mind?">What would change my mind? ↗</button><button type="button" data-command="Show me the downside">Show me the downside ↗</button><button type="button" data-command="Lower London rent by £200">What if rent is £200 less? ↗</button></div>
+      <form id="command-form"><label class="sr-only" for="command">Ask Parallel a question</label><div class="command-box"><input id="command" placeholder="Try: London rent is £1,450" autocomplete="off" maxlength="300"><button id="mic" type="button" aria-label="Use microphone" title="Use microphone">♩</button><button class="send" type="submit" aria-label="Send command">↑</button></div></form>
+      <p class="voice-footnote">A guided Alexa+ simulation. Typed commands always work; microphone and speech depend on your browser.</p>
+      <details class="tool-trace"><summary>See the last tool call</summary><pre id="tool-trace">Waiting for your first question.</pre></details>
+    </aside>
+  </section>
+  <footer class="page-footer"><span>PARALLEL <span class="footer-slash">/</span> THINK IN POSSIBILITIES.</span><div><span id="engine-label">Browser engine · Python-verified</span><button data-dialog="model-dialog" type="button">Model v1.0 ↗</button><button data-dialog="demo-dialog" type="button">Demo guide ↗</button></div></footer>
+</main>
+<dialog id="model-dialog"><div class="dialog-header"><span class="section-label">INSIDE THE MODEL</span><button class="dialog-close" type="button" aria-label="Close">×</button></div><h2>A small model. Every assumption visible.</h2><p>For each world, Parallel gives both options the same economic conditions, spending shocks and employment-shock draws. Each option responds according to its own salary, costs and risk assumptions.</p><div class="formula">Next savings = current savings + take-home pay − rent − living costs − transport − unexpected bills</div><h3>What the numbers mean</h3><dl><dt>“Finishes ahead”</dt><dd>The fraction of paired worlds where London ends with more savings, or a higher time-adjusted score when a time value is set. Exact ties are counted separately.</dd><dt>Expected regret</dt><dd>The average gap between choosing an option now and the better option in hindsight in each world. It is measured in pounds of the selected score, not emotional regret.</dd><dt>Rent tipping point</dt><dd>The London base rent where the average score of the two choices is equal. It uses the same simulated rent growth and shocks; it is not the rent where London wins exactly 50% of worlds.</dd><dt>Middle 80%</dt><dd>The 10th–90th percentiles of savings at each month. This is a pointwise range, not a guarantee that 80% of entire paths stay inside the band.</dd><dt>Monte Carlo error</dt><dd id="mc-detail">A sampling error estimate will appear after a run.</dd><dt>Limits</dt><dd>Illustrative inputs, no live rental or labour-market data. Costs are nominal GBP. No interest, debt costs, taxes beyond the take-home input, asset returns, household changes or non-financial career value are modelled. Shared shocks assume strong positive dependence. Results depend on this choice.</dd></dl><button class="secondary" id="export-model" type="button">Download reproducible run JSON ↗</button></dialog>
+<dialog id="assumptions-dialog"><div class="dialog-header"><span class="section-label">YOUR ASSUMPTIONS</span><button class="dialog-close" type="button" aria-label="Close">×</button></div><h2>Open the black box.</h2><p>Every input below is an example, not a researched estimate. Take-home pay is already after tax.</p><form id="assumption-form"><div class="assumption-grid" id="assumption-fields"></div><p class="small muted">Shared assumptions: annual inflation varies by world (SD 1.5 percentage points); rent growth adds SD 2.5 points. Wage-growth SD is 2.5 points. A shared 3% monthly bill risk costs £300–£1,500. Unemployment pays an assumed 20% fallback income. All shocks are shared across options; the job-loss thresholds can differ.</p><div class="form-actions"><span id="assumption-error" role="alert"></span><button class="primary" type="submit">Apply & simulate →</button></div></form></dialog>
+<dialog id="demo-dialog"><div class="dialog-header"><span class="section-label">A TWO-MINUTE WALKTHROUGH</span><button class="dialog-close" type="button" aria-label="Close">×</button></div><h2>Show the decision changing.</h2><ol class="demo-steps"><li><b>Start with the offer.</b> London pays £850 more each month. The model includes higher rent, moving costs and employment risk.</li><li><b>Ask “Show me the downside.”</b> Look at the worst-decile savings and the chance of crossing the £5,000 buffer.</li><li><b>Ask “What would change my mind?”</b> The tipping point gives you a concrete question to take to a landlord.</li><li><b>Ask “Lower London rent by £200.”</b> The agent changes one assumption and re-runs the same worlds.</li><li><b>Set a value for your time.</b> The commute preference can change the time-adjusted comparison while the cash chart stays separate.</li><li><b>Export the run.</b> Every input, seed, result and tool action can be inspected and reproduced.</li></ol><p>Built as a simulated Alexa+ experience. No live Alexa+ account or Amazon credentials are required.</p><a class="secondary" href="Parallel-Prototype.zip" download>Download Python prototype & source ↗</a></dialog>
+<div class="toast" id="toast" role="status"></div>
+</body>
+</html>

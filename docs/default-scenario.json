@@ -1,0 +1,36 @@
+{
+  "months": 36,
+  "paths": 10000,
+  "seed": 42,
+  "savings": 12000,
+  "buffer": 5000,
+  "inflation": 0.03,
+  "cost_volatility": 0.12,
+  "time_value": 0,
+  "options": [
+    {
+      "name": "Stay in Manchester",
+      "income": 2900,
+      "rent": 900,
+      "costs": 850,
+      "commute_cost": 100,
+      "commute_hours": 16,
+      "moving_cost": 0,
+      "growth": 0.035,
+      "job_loss": 0.06,
+      "recovery_months": 3
+    },
+    {
+      "name": "Take the London offer",
+      "income": 3750,
+      "rent": 1650,
+      "costs": 900,
+      "commute_cost": 180,
+      "commute_hours": 32,
+      "moving_cost": 2400,
+      "growth": 0.055,
+      "job_loss": 0.08,
+      "recovery_months": 3
+    }
+  ]
+}
