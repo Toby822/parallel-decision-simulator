@@ -1,10 +1,11 @@
-name: Publish Parallel web app
+name: Publish research web apps
 
 on:
   push:
     branches: [main]
     paths:
       - 'dist/**'
+      - 'markout-lab/**'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
@@ -19,36 +20,43 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy interactive dashboard
+    name: Build and deploy public research apps
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Check out repository
+      - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Check static web app
+      - name: Validate simulation scripts
         run: |
+          set -euo pipefail
+          for f in dist/app.js dist/model.js dist/agent.js dist/simulation-worker.js markout-lab/sim.js markout-lab/app.js; do
+            test -s "$f"
+            node --check "$f"
+          done
+          node markout-lab/tests/test-sim.cjs
+          test -s markout-lab/index.html
+          test -s markout-lab/style.css
+
+      - name: Stage Markout Lab alongside Parallel
+        run: |
+          mkdir -p dist/markout-lab
+          cp markout-lab/index.html markout-lab/style.css markout-lab/sim.js markout-lab/app.js markout-lab/favicon.svg dist/markout-lab/
+          touch dist/.nojekyll
           test -s dist/index.html
-          test -s dist/app.js
-          test -s dist/model.js
-          test -s dist/agent.js
-          test -s dist/simulation-worker.js
-          test -s dist/style.css
-          node --check dist/app.js
-          node --check dist/model.js
-          node --check dist/agent.js
-          node --check dist/simulation-worker.js
+          test -s dist/markout-lab/index.html
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload dashboard
+      - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist
 
-      - name: Deploy to GitHub Pages
+      - name: Publish GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
